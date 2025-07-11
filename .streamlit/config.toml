@@ -1,0 +1,6 @@
+[tool.streamlit]
+# Existing configurations...
+
+# Add this section for post-install commands
+[commands]
+post_install = "pip install 'protobuf<4.21' && cd /home/adminuser/venv/lib/python3.10/site-packages/object_detection && protoc object_detection/protos/*.proto --python_out=."
