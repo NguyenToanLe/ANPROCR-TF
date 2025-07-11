@@ -1,10 +1,8 @@
 import streamlit as st
 import numpy as np
-import cv2
 from PIL import Image
 
 import tensorflow as tf
-import torch
 import easyocr
 
 from object_detection.utils import config_util, label_map_util
