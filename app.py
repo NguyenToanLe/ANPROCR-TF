@@ -1,4 +1,50 @@
 import streamlit as st
+from pathlib import Path
+import os
+import subprocess
+
+
+# --- SETUP LOGIC (RUN ONCE) ---
+SETUP_COMPLETE_FILE = Path(".streamlit_setup_complete")
+
+if not SETUP_COMPLETE_FILE.exists():
+    st.warning("Running initial setup. This may take a few minutes...")
+    try:
+        # Ensure start.sh is executable and run it
+        os.chmod("start.sh", 0o755) # Make executable, even if on Windows locally
+        result = subprocess.run(
+            ["./start.sh"],
+            capture_output=True,
+            text=True,
+            check=True, # Raise an exception for non-zero exit codes
+            env=os.environ.copy() # Pass current environment, including existing PYTHONPATH
+        )
+        st.text("start.sh output:")
+        st.code(result.stdout)
+        if result.stderr:
+            st.error("start.sh errors:")
+            st.code(result.stderr)
+
+        # After start.sh, the PYTHONPATH might need to be re-evaluated for the current Python process
+        # This is tricky because os.environ.copy() only passes it to the subprocess, not changes current process
+        # However, the 'python setup.py install' *should* have installed to the venv site-packages.
+        # So, object_detection should be discoverable after the install step.
+
+        # Create a marker file to indicate setup is complete
+        SETUP_COMPLETE_FILE.touch()
+        st.success("Initial setup complete! Please refresh the app.")
+        st.stop() # Stop the app execution here, forcing a refresh
+    except subprocess.CalledProcessError as e:
+        st.error(f"Setup script failed with error code {e.returncode}:")
+        st.code(e.stdout)
+        st.code(e.stderr)
+        st.stop()
+    except Exception as e:
+        st.error(f"An unexpected error occurred during setup: {e}")
+        st.stop()
+# --- END SETUP LOGIC ---
+
+
 import numpy as np
 from PIL import Image
 
