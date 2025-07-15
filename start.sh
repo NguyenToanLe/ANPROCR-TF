@@ -22,15 +22,11 @@ echo "Navigating to $TF_MODELS_DIR/research..."
 cd "$TF_MODELS_DIR/research"
 
 # Compile protobufs
-# Streamlit Cloud environments usually have 'protoc' installed.
 echo "Compiling protobufs..."
-protoc object_detection/protos/*.proto --python_out=. || { echo "Protoc compilation failed, but continuing..."; } # Add || true to make it non-fatal if protoc not found in some cases, or handle error properly
+protoc object_detection/protos/*.proto --python_out=. || { echo "Protoc compilation failed, but continuing..."; }
 
 # Install object_detection API
 echo "Installing object_detection API..."
-# Create a dummy setup.py in the current directory, if needed by object_detection setup.
-# Or, if the existing setup.py from tf2 is sufficient, copy it.
-# Based on your local steps, 'copy object_detection\packages\tf2\setup.py .' is used.
 cp object_detection/packages/tf2/setup.py .
 python setup.py build
 python setup.py install
@@ -41,6 +37,5 @@ cd slim
 pip install -e . # -e ensures it's installed in editable mode from this cloned repo
 cd ../../.. # Go back to the root of your app repository (where app.py is)
 
-# Run the Streamlit app
-echo "Starting Streamlit app..."
-streamlit run app.py
+# The `streamlit run app.py` command is now removed from start.sh,
+# as Streamlit Cloud will run app.py automatically after the startup script.
